@@ -25,3 +25,12 @@ and compare to:
 ```
 $ python ldap_auto_discover.py your.domain.com
 ```
+
+
+Tests
+-----
+
+Run the tests via
+```
+$ PYTHONPATH=. python tests/test_discover.py
+```
