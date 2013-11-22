@@ -1,12 +1,27 @@
 Automatic discover of LDAP services
 ===================================
 
-This is a addon for the AUTH_LDAP_SERVER_URI code in
-django-ldap-auth >= 1.1.6 (http://pythonhosted.org/django-auth-ldap/)
+This addon will add automatic discovery of the LDAP server to use
+for django-ldap-auth. It requires version 1.1.6+ of django-ldap-auth
+and dnspython.
 
-To use it, add the following to your django settings.py:
+If your company/organization is publishing the LDAP servers via DNS
+SRV records you just need to add the following to you django settings.py:
 ```
 from ldap_auto_discover import discover_lap_servers
 
-AUTH_LDAP_SERVER_URI = lambda: discover_ldap_servers("my.domain.com")
+AUTH_LDAP_SERVER_URI = lambda: discover_ldap_servers("your.domain.com")
+```
+
+Troubleshooting
+---------------
+
+You can check what records are published via:
+```
+$ nslookup -type=SRV _ldap._tcp.your.domain.com
+```
+
+and compare to:
+```
+$ python ldap_auto_discover.py your.domain.com
 ```
