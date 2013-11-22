@@ -64,7 +64,7 @@ class ServerDiscoverer(object):
 
 
 discoverer = None
-def discover_ldap_servers(domain):
+def ldap_auto_discover(domain):
     """
     Returns a space-separated list of LDAP servers for this domain.
 
@@ -81,4 +81,4 @@ def discover_ldap_servers(domain):
 
 
 if __name__ == "__main__":
-    print discover_ldap_servers(sys.argv[1])
+    print ldap_auto_discover(sys.argv[1])
