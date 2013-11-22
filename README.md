@@ -8,7 +8,7 @@ and dnspython.
 If your company/organization is publishing the LDAP servers via DNS
 SRV records you just need to add the following to you django settings.py:
 ```
-from ldap_auto_discover import discover_lap_servers
+from ldap_auto_discover import discover_ldap_servers
 
 AUTH_LDAP_SERVER_URI = lambda: discover_ldap_servers("your.domain.com")
 ```
