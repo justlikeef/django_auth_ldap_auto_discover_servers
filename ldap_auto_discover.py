@@ -1,10 +1,6 @@
-from collections import defaultdict
 from datetime import datetime, timedelta
-import random
-import sys
-
+import random, sys
 import dns.resolver
-
 
 class ServerDiscoverer(object):
     """
@@ -41,37 +37,37 @@ class ServerDiscoverer(object):
 
     def _load_hosts(self):
         resolver = dns.resolver.Resolver()
-        name = '_{self.service}._{self.protocol}.{self.domain}'.format(
-            self=self)
+        name = '_{self.service}._{self.protocol}.{self.domain}'.format(self=self)
 
-        results = resolver.query(name, 'SRV')
+        results = resolver.resolve(name, 'SRV')
 
-        servers = defaultdict(list)
+        servers = {}
         for srv in results:
             priority = int(srv.priority)
             target = srv.target.to_text().strip('.')
             port = srv.port
 
-            servers[priority].append((target, port))
+            if priority not in servers:
+                servers[priority] = []
+                
+            servers[priority].append([target, port])
 
         # TODO: support weighting?
-        for server_list in servers.itervalues():
+        for server_list in servers.values():
             random.shuffle(server_list)
 
-        self._hosts = [host for priority in sorted(servers.iterkeys())
+        self._hosts = [host for priority in sorted(servers.keys())
                        for host in servers[priority]]
         self._expires = datetime.utcfromtimestamp(results.expiration)
 
-
 discoverer = None
-def ldap_auto_discover(domain):
-    """
-    Returns a space-separated list of LDAP servers for this domain.
-
-    This uses SRV records to discover local LDAP servers and returns them in
-    a prioritized, space-separated list for python-ldap's initialize function.
-    """
+def ldap_auto_discover(request, domain=None):
     global discoverer
+
+    if domain==None:
+        from django.conf import Settings
+        domain = Settings.AUTH_LDAP_AUTODISCOVERY_DOMAIN
+
     if discoverer is None:
         discoverer = ServerDiscoverer("ldap", "tcp", domain)
     hosts = discoverer.hosts()
@@ -79,6 +75,5 @@ def ldap_auto_discover(domain):
     return ' '.join('ldap://{}:{}'.format(target, port)
                     for target, port in hosts)
 
-
 if __name__ == "__main__":
-    print ldap_auto_discover(sys.argv[1])
+    print (ldap_auto_discover(None, sys.argv[1]))
