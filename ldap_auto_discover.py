@@ -65,8 +65,8 @@ def ldap_auto_discover(request, domain=None):
     global discoverer
 
     if domain==None:
-        from django.conf import Settings
-        domain = Settings.AUTH_LDAP_AUTODISCOVERY_DOMAIN
+        from django.conf import settings
+        domain = settings.AUTH_LDAP_AUTODISCOVERY_DOMAIN
 
     if discoverer is None:
         discoverer = ServerDiscoverer("ldap", "tcp", domain)
